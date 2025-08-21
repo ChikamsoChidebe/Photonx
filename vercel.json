@@ -1,13 +1,11 @@
 {
+  "buildCommand": "cd apps/web && npm run build",
+  "outputDirectory": "apps/web/.next",
+  "installCommand": "npm install && cd apps/web && npm install",
+  "framework": "nextjs",
   "functions": {
     "apps/web/src/app/**/*.{js,ts,tsx}": {
       "maxDuration": 30
     }
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/apps/web/$1"
-    }
-  ]
+  }
 }
