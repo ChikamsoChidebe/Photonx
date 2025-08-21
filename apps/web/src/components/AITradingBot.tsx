@@ -116,7 +116,7 @@ export default function AITradingBot() {
       boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)'
     }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }} className="ai-bot-header">
         <div>
           <h2 style={{ color: '#fff', fontSize: '24px', fontWeight: 'bold', margin: 0 }}>
             <Icons.Robot /> AI Trading Bot
@@ -150,7 +150,7 @@ export default function AITradingBot() {
         gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
         gap: '16px',
         marginBottom: '24px'
-      }}>
+      }} className="performance-grid">
         <div style={{
           background: 'rgba(255, 255, 255, 0.05)',
           borderRadius: '12px',

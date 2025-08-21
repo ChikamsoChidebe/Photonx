@@ -214,7 +214,7 @@ export default function CrossChainBridge() {
         <h3 style={{ color: '#fff', fontSize: '16px', fontWeight: 'bold', marginBottom: '12px' }}>
           <Icons.Link /> Network Status
         </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }} className="chain-status-grid">
           {chains.map((chain) => (
             <div key={chain.id} style={{
               background: 'rgba(255, 255, 255, 0.05)',
@@ -280,7 +280,7 @@ export default function CrossChainBridge() {
             <label style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '14px', display: 'block', marginBottom: '8px' }}>
               From
             </label>
-            <div style={{ display: 'flex', gap: '12px' }}>
+            <div style={{ display: 'flex', gap: '12px' }} className="bridge-form-row">
               <select
                 value={selectedFromChain.id}
                 onChange={(e) => setSelectedFromChain(chains.find(c => c.id === parseInt(e.target.value))!)}

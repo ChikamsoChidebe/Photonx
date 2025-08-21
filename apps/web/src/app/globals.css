@@ -164,6 +164,191 @@
     .quote-card {
       padding: 16px !important;
     }
+    
+    /* AI Trading Bot responsive */
+    .ai-bot-header {
+      flex-direction: column !important;
+      gap: 16px !important;
+      text-align: center !important;
+    }
+    
+    .performance-grid {
+      grid-template-columns: 1fr !important;
+      gap: 12px !important;
+    }
+    
+    /* Analytics responsive */
+    .analytics-header {
+      flex-direction: column !important;
+      gap: 16px !important;
+      text-align: center !important;
+    }
+    
+    .analytics-header > div:last-child {
+      justify-content: center !important;
+    }
+    
+    .network-health-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 12px !important;
+    }
+    
+    /* LP Interface responsive */
+    .lp-stats-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 12px !important;
+    }
+    
+    .lp-main-grid {
+      grid-template-columns: 1fr !important;
+      gap: 16px !important;
+    }
+    
+    /* Demo components general */
+    .demo-component {
+      padding: 16px !important;
+      margin-bottom: 16px !important;
+    }
+    
+    .demo-component h2 {
+      font-size: 20px !important;
+      margin-bottom: 16px !important;
+    }
+    
+    .demo-component h3 {
+      font-size: 16px !important;
+      margin-bottom: 12px !important;
+    }
+    
+    /* Card layouts */
+    .demo-card {
+      padding: 12px !important;
+      margin-bottom: 12px !important;
+    }
+    
+    .demo-card-grid {
+      grid-template-columns: 1fr !important;
+      gap: 12px !important;
+    }
+    
+    /* Button adjustments */
+    .demo-button {
+      padding: 12px 16px !important;
+      font-size: 14px !important;
+      width: 100% !important;
+    }
+    
+    /* Text adjustments */
+    .demo-text-lg {
+      font-size: 18px !important;
+    }
+    
+    .demo-text-md {
+      font-size: 16px !important;
+    }
+    
+    .demo-text-sm {
+      font-size: 14px !important;
+    }
+    
+    /* Spacing adjustments */
+    .demo-spacing {
+      margin: 8px 0 !important;
+    }
+    
+    .demo-padding {
+      padding: 12px !important;
+    }
+    
+    /* CrossChain Bridge responsive */
+    .chain-status-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 8px !important;
+    }
+    
+    .bridge-form-row {
+      flex-direction: column !important;
+      gap: 8px !important;
+    }
+    
+    .bridge-form-row input,
+    .bridge-form-row select {
+      width: 100% !important;
+    }
+    
+    /* HackathonShowcase responsive */
+    .hackathon-grid {
+      grid-template-columns: 1fr !important;
+      gap: 12px !important;
+    }
+    
+    .hackathon-feature {
+      padding: 16px !important;
+    }
+    
+    /* YellowNetwork responsive */
+    .yellow-network-grid {
+      grid-template-columns: 1fr !important;
+      gap: 12px !important;
+    }
+    
+    .yellow-network-card {
+      padding: 16px !important;
+    }
+    
+    /* General mobile optimizations */
+    .mobile-stack {
+      flex-direction: column !important;
+      gap: 12px !important;
+    }
+    
+    .mobile-full-width {
+      width: 100% !important;
+    }
+    
+    .mobile-center {
+      text-align: center !important;
+      justify-content: center !important;
+    }
+    
+    .mobile-hide {
+      display: none !important;
+    }
+    
+    /* Improve touch targets */
+    input, select, button {
+      min-height: 44px !important;
+    }
+    
+    /* Better text readability */
+    body {
+      -webkit-text-size-adjust: 100% !important;
+      text-size-adjust: 100% !important;
+    }
+    
+    /* Prevent horizontal scroll */
+    body, html {
+      overflow-x: hidden !important;
+    }
+    
+    /* Improve form elements */
+    input[type="number"],
+    input[type="text"],
+    select {
+      font-size: 16px !important;
+      padding: 12px !important;
+    }
+    
+    /* Better button spacing */
+    button + button {
+      margin-top: 8px !important;
+    }
+    
+    /* Responsive images */
+    img {
+      max-width: 100% !important;
+      height: auto !important;
+    }
   }
 
   @media (min-width: 769px) {

@@ -81,7 +81,7 @@ export function LPInterface() {
           </h1>
           
           {/* Overview Stats */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }} className="lp-stats-grid">
             <div style={{
               background: 'linear-gradient(135deg, rgba(0, 210, 211, 0.1), rgba(84, 160, 255, 0.1))',
               borderRadius: '16px',
@@ -136,7 +136,7 @@ export function LPInterface() {
           </div>
         </div>
         
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }} className="lp-main-grid">
           {/* Add Liquidity */}
           <div style={{
             background: 'rgba(255, 255, 255, 0.05)',

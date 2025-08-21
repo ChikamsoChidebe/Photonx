@@ -130,7 +130,7 @@ export default function RealTimeAnalytics() {
       boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)'
     }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }} className="analytics-header">
         <div>
           <h2 style={{ color: '#fff', fontSize: '24px', fontWeight: 'bold', margin: 0 }}>
             <Icons.Chart /> Real-Time Analytics
@@ -172,7 +172,7 @@ export default function RealTimeAnalytics() {
           display: 'grid', 
           gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', 
           gap: '16px'
-        }}>
+        }} className="network-health-grid">
           <div style={{
             background: 'rgba(0, 255, 136, 0.1)',
             borderRadius: '12px',

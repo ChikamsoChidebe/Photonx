@@ -240,7 +240,7 @@ export default function HackathonShowcase() {
         gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
         gap: '16px',
         marginBottom: '32px'
-      }}>
+      }} className="hackathon-grid">
         <div style={{
           background: 'rgba(255, 255, 255, 0.15)',
           borderRadius: '16px',
@@ -321,7 +321,7 @@ export default function HackathonShowcase() {
         }}>
           <Icons.Target /> Hackathon Success Metrics
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }} className="hackathon-grid">
           {metrics.map((metric, index) => (
             <div key={index} style={{
               background: 'rgba(255, 255, 255, 0.1)',
@@ -504,7 +504,7 @@ export default function HackathonShowcase() {
         }}>
           <Icons.Users /> Team Excellence
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }} className="hackathon-grid">
           {team.map((member, index) => (
             <div key={index} style={{
               background: 'rgba(255, 255, 255, 0.1)',
