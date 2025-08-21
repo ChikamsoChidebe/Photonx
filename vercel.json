@@ -1,15 +1,13 @@
 {
-  "name": "photonx",
-  "version": 2,
-  "buildCommand": "cd apps/web && npm run build",
-  "outputDirectory": "apps/web/.next",
-  "installCommand": "cd apps/web && npm install",
-  "env": {
-    "NEXT_PUBLIC_APP_NAME": "PhotonX",
-    "NEXT_PUBLIC_CHAIN_ID": "31337",
-    "NEXT_PUBLIC_COORDINATOR_URL": "https://api.photonx.network",
-    "NEXT_PUBLIC_SETTLEMENT_CONTRACT": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-    "NEXT_PUBLIC_CUSTODY_VAULT": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-    "NEXT_PUBLIC_ENABLE_TESTNETS": "true"
-  }
+  "functions": {
+    "apps/web/src/app/**/*.{js,ts,tsx}": {
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/apps/web/$1"
+    }
+  ]
 }

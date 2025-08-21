@@ -1,6 +1,7 @@
 apps/coordinator/
 apps/relayer/
-packages/
+packages/proto/
+packages/sdk/
 contracts/
 infra/
 *.md
