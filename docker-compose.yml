@@ -1,0 +1,432 @@
+# Docker Compose for PhotonX Development Environment
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: photonx-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: photonx
+      MONGO_INITDB_ROOT_PASSWORD: photonx_password_2025
+      MONGO_INITDB_DATABASE: photonx
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./infra/docker/mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks:
+      - photonx-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Redis Cache & Message Broker
+  redis:
+    image: redis:7.2-alpine
+    container_name: photonx-redis
+    restart: unless-stopped
+    command: redis-server --requirepass photonx_redis_2025 --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./infra/docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      - photonx-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Hardhat Local Blockchain (Development)
+  hardhat:
+    build:
+      context: ./contracts
+      dockerfile: ../infra/docker/hardhat/Dockerfile
+    container_name: photonx-hardhat
+    restart: unless-stopped
+    ports:
+      - "8545:8545"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./contracts:/app/contracts
+      - hardhat_cache:/app/cache
+      - hardhat_artifacts:/app/artifacts
+    networks:
+      - photonx-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8545"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # PhotonX Coordinator Service
+  coordinator:
+    build:
+      context: .
+      dockerfile: ./infra/docker/coordinator/Dockerfile
+    container_name: photonx-coordinator
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - MONGODB_URI=mongodb://photonx:photonx_password_2025@mongodb:27017/photonx?authSource=admin
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=photonx_redis_2025
+      - REDIS_DB=0
+      - LOG_LEVEL=info
+      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3002
+      - JWT_SECRET=photonx_jwt_secret_2025_hackathon
+      - ETHEREUM_RPC_URL=http://hardhat:8545
+      - POLYGON_RPC_URL=https://polygon-rpc.com
+      - BASE_RPC_URL=https://mainnet.base.org
+      - ARBITRUM_RPC_URL=https://arb1.arbitrum.io/rpc
+      - SETTLEMENT_CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
+      - CUSTODY_VAULT_ADDRESS=0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+      - PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      hardhat:
+        condition: service_healthy
+    volumes:
+      - ./apps/coordinator:/app/coordinator
+      - ./packages:/app/packages
+      - coordinator_logs:/app/logs
+    networks:
+      - photonx-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Settlement Relayer Service
+  relayer:
+    build:
+      context: .
+      dockerfile: ./infra/docker/relayer/Dockerfile
+    container_name: photonx-relayer
+    restart: unless-stopped
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+      - MONGODB_URI=mongodb://photonx:photonx_password_2025@mongodb:27017/photonx?authSource=admin
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=photonx_redis_2025
+      - LOG_LEVEL=info
+      - ETHEREUM_RPC_URL=http://hardhat:8545
+      - POLYGON_RPC_URL=https://polygon-rpc.com
+      - BASE_RPC_URL=https://mainnet.base.org
+      - ARBITRUM_RPC_URL=https://arb1.arbitrum.io/rpc
+      - SETTLEMENT_CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
+      - CUSTODY_VAULT_ADDRESS=0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+      - PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+      - BATCH_SIZE=10
+      - BATCH_TIMEOUT=300000
+      - GAS_PRICE_MULTIPLIER=1.2
+      - MAX_GAS_PRICE=100000000000
+    depends_on:
+      coordinator:
+        condition: service_healthy
+    volumes:
+      - ./apps/relayer:/app/relayer
+      - ./packages:/app/packages
+      - relayer_logs:/app/logs
+    networks:
+      - photonx-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Next.js Web Application
+  web:
+    build:
+      context: .
+      dockerfile: ./infra/docker/web/Dockerfile
+    container_name: photonx-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+      - NEXT_PUBLIC_COORDINATOR_URL=http://localhost:3001
+      - NEXT_PUBLIC_WS_URL=ws://localhost:3001
+      - NEXT_PUBLIC_CHAIN_ID=31337
+      - NEXT_PUBLIC_SETTLEMENT_CONTRACT=0x5FbDB2315678afecb367f032d93F642f64180aa3
+      - NEXT_PUBLIC_CUSTODY_VAULT=0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+      - NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_walletconnect_project_id
+      - NEXT_PUBLIC_ALCHEMY_API_KEY=your_alchemy_api_key
+      - NEXT_PUBLIC_INFURA_API_KEY=your_infura_api_key
+      - NEXT_PUBLIC_ENABLE_TESTNETS=true
+      - NEXT_PUBLIC_ANALYTICS_ID=your_analytics_id
+    depends_on:
+      coordinator:
+        condition: service_healthy
+    volumes:
+      - ./apps/web:/app/web
+      - ./packages:/app/packages
+      - web_node_modules:/app/web/node_modules
+      - web_next:/app/web/.next
+    networks:
+      - photonx-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # LP Engine Service
+  lp-engine:
+    build:
+      context: .
+      dockerfile: ./infra/docker/lp-engine/Dockerfile
+    container_name: photonx-lp-engine
+    restart: unless-stopped
+    ports:
+      - "3004:3004"
+    environment:
+      - NODE_ENV=development
+      - PORT=3004
+      - MONGODB_URI=mongodb://photonx:photonx_password_2025@mongodb:27017/photonx?authSource=admin
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=photonx_redis_2025
+      - COORDINATOR_URL=http://coordinator:3001
+      - LOG_LEVEL=info
+      - DEFAULT_SPREAD_BPS=30
+      - MAX_POSITION_SIZE=1000000000000000000000
+      - RISK_LIMIT_DAILY=10000000000000000000000
+      - PRICE_FEED_INTERVAL=5000
+      - INVENTORY_REBALANCE_THRESHOLD=0.2
+      - ENABLE_AUTO_QUOTING=true
+      - SUPPORTED_PAIRS=ETH/USDC,WBTC/USDC,MATIC/USDC
+    depends_on:
+      coordinator:
+        condition: service_healthy
+    volumes:
+      - ./apps/lp-engine:/app/lp-engine
+      - ./packages:/app/packages
+      - lp_engine_logs:/app/logs
+    networks:
+      - photonx-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Nginx Reverse Proxy & Load Balancer
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: photonx-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infra/docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./infra/docker/nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - web
+      - coordinator
+      - relayer
+      - lp-engine
+    networks:
+      - photonx-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Prometheus Monitoring
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: photonx-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infra/docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./infra/docker/prometheus/rules:/etc/prometheus/rules:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    networks:
+      - photonx-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Grafana Dashboard
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: photonx-grafana
+    restart: unless-stopped
+    ports:
+      - "3005:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=photonx_grafana_2025
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - ./infra/docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - photonx-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ElasticSearch for Logging
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: photonx-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - photonx-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Kibana for Log Visualization
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: photonx-kibana
+    restart: unless-stopped
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    volumes:
+      - kibana_data:/usr/share/kibana/data
+    networks:
+      - photonx-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Logstash for Log Processing
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.11.0
+    container_name: photonx-logstash
+    restart: unless-stopped
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+    environment:
+      - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
+    volumes:
+      - ./infra/docker/logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./infra/docker/logstash/config:/usr/share/logstash/config:ro
+      - logstash_data:/usr/share/logstash/data
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - photonx-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9600 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+  hardhat_cache:
+    driver: local
+  hardhat_artifacts:
+    driver: local
+  coordinator_logs:
+    driver: local
+  relayer_logs:
+    driver: local
+  lp_engine_logs:
+    driver: local
+  web_node_modules:
+    driver: local
+  web_next:
+    driver: local
+  nginx_logs:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  elasticsearch_data:
+    driver: local
+  kibana_data:
+    driver: local
+  logstash_data:
+    driver: local
+
+networks:
+  photonx-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

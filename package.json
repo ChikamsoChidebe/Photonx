@@ -1,0 +1,53 @@
+{
+  "name": "photonx",
+  "version": "1.0.0",
+  "description": "Gasless cross-chain RFQ orderbook with ERC-7824 state channels",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean",
+    "contracts:compile": "cd contracts && npx hardhat compile",
+    "contracts:test": "cd contracts && npx hardhat test",
+    "contracts:deploy:local": "cd contracts && npx hardhat run scripts/deploy.ts --network localhost",
+    "contracts:deploy:testnet": "cd contracts && npx hardhat run scripts/deploy.ts --network sepolia",
+    "contracts:deploy:mainnet": "cd contracts && npx hardhat run scripts/deploy.ts --network mainnet",
+    "coordinator:dev": "cd apps/coordinator && npm run dev",
+    "relayer:dev": "cd apps/relayer && npm run dev",
+    "web:dev": "cd apps/web && npm run dev",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "setup": "npm install && npm run contracts:compile"
+  },
+  "devDependencies": {
+    "turbo": "^1.10.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/photonx/photonx"
+  },
+  "keywords": [
+    "defi",
+    "dex",
+    "state-channels",
+    "erc-7824",
+    "rfq",
+    "cross-chain",
+    "yellow-network"
+  ],
+  "author": "PhotonX Team",
+  "license": "MIT"
+}

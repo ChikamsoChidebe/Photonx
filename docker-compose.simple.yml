@@ -1,0 +1,44 @@
+# Docker Compose for PhotonX Development Environment
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: photonx-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: photonx
+      MONGO_INITDB_ROOT_PASSWORD: photonx_password_2025
+      MONGO_INITDB_DATABASE: photonx
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  # Redis Cache
+  redis:
+    image: redis:7.2-alpine
+    container_name: photonx-redis
+    restart: unless-stopped
+    command: redis-server --requirepass photonx_redis_2025
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # Hardhat Local Blockchain
+  hardhat:
+    image: node:18-alpine
+    container_name: photonx-hardhat
+    working_dir: /app
+    command: sh -c "npm install && npx hardhat node --hostname 0.0.0.0"
+    ports:
+      - "8545:8545"
+    volumes:
+      - ./contracts:/app
+    environment:
+      - NODE_ENV=development
+
+volumes:
+  mongodb_data:
+  redis_data:
