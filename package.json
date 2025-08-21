@@ -5,11 +5,11 @@
   "private": true,
 
   "scripts": {
-    "dev": "turbo run dev",
+    "dev": "cd apps/web && npm run dev",
     "build": "cd apps/web && npm install && npm run build",
-    "test": "turbo run test",
-    "lint": "turbo run lint",
-    "clean": "turbo run clean",
+    "test": "cd apps/web && npm run test",
+    "lint": "cd apps/web && npm run lint",
+    "clean": "cd apps/web && npm run clean",
     "contracts:compile": "cd contracts && npx hardhat compile",
     "contracts:test": "cd contracts && npx hardhat test",
     "contracts:deploy:local": "cd contracts && npx hardhat run scripts/deploy.ts --network localhost",
@@ -23,7 +23,6 @@
     "setup": "npm install && npm run contracts:compile"
   },
   "devDependencies": {
-    "turbo": "^1.10.0",
     "@types/node": "^20.0.0",
     "typescript": "^5.0.0",
     "eslint": "^8.0.0",
