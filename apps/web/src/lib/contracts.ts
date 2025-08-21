@@ -80,7 +80,9 @@ export function getContractAddress(chainId: number, contract: 'SETTLEMENT' | 'CU
 }
 
 export function getTokenAddress(chainId: number, token: string): string {
-  return TOKENS[chainId as keyof typeof TOKENS]?.[token as keyof typeof TOKENS[1]] || '';
+  const networkTokens = TOKENS[chainId as keyof typeof TOKENS];
+  if (!networkTokens) return '';
+  return (networkTokens as any)[token] || '';
 }
 
 export function getNetworkInfo(chainId: number) {
