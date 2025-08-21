@@ -1,0 +1,9 @@
+apps/coordinator/
+apps/relayer/
+packages/
+contracts/
+infra/
+*.md
+.env.example
+docker-compose*.yml
+start-dev.bat

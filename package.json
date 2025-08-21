@@ -4,12 +4,12 @@
   "description": "Gasless cross-chain RFQ orderbook with ERC-7824 state channels",
   "private": true,
   "workspaces": [
-    "apps/*",
+    "apps/web",
     "packages/*"
   ],
   "scripts": {
     "dev": "turbo run dev",
-    "build": "turbo run build",
+    "build": "cd apps/web && npm run build",
     "test": "turbo run test",
     "lint": "turbo run lint",
     "clean": "turbo run clean",
