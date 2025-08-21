@@ -4,7 +4,6 @@
   "buildCommand": "cd apps/web && npm run build",
   "outputDirectory": "apps/web/.next",
   "installCommand": "cd apps/web && npm install",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD apps/web/",
   "env": {
     "NEXT_PUBLIC_APP_NAME": "PhotonX",
     "NEXT_PUBLIC_CHAIN_ID": "31337",
