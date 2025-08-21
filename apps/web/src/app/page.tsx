@@ -44,6 +44,7 @@ interface LPMetrics {
 export default function PhotonXDemo() {
   const [activeMode, setActiveMode] = useState<'landing' | 'trading' | 'lp' | 'demo' | 'judge'>('landing');
   const [isJudgeMode, setIsJudgeMode] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [trades, setTrades] = useState<TradeData[]>([]);
   const [metrics, setMetrics] = useState<ChannelMetrics>({
     totalChannels: 1247,
@@ -147,6 +148,11 @@ export default function PhotonXDemo() {
 
   const handleModeSwitch = (mode: 'landing' | 'trading' | 'lp' | 'demo' | 'judge') => {
     setActiveMode(mode);
+    setIsMobileMenuOpen(false); // Close mobile menu when switching modes
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   return (
@@ -160,12 +166,13 @@ export default function PhotonXDemo() {
         background: 'rgba(0, 0, 0, 0.8)',
         backdropFilter: 'blur(20px)',
         borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        padding: '16px 32px',
+        padding: '16px 20px',
         position: 'sticky',
         top: 0,
         zIndex: 100
-      }}>
+      }} className="responsive-nav">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {/* Logo and Judge Mode Badge */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <h1 style={{
               color: '#fff',
@@ -186,14 +193,19 @@ export default function PhotonXDemo() {
                 borderRadius: '20px',
                 fontSize: '12px',
                 fontWeight: 'bold',
-                animation: 'pulse 2s infinite'
+                animation: 'pulse 2s infinite',
+                display: window.innerWidth > 768 ? 'block' : 'none'
               }}>
                 🏆 JUDGE MODE
               </div>
             )}
           </div>
           
-          <div style={{ display: 'flex', gap: '12px' }}>
+          {/* Desktop Navigation */}
+          <div style={{ 
+            display: 'flex', 
+            gap: '12px'
+          }} className="hidden-mobile">
             {['landing', 'trading', 'lp', 'demo', 'judge'].map((mode) => (
               <button
                 key={mode}
@@ -218,17 +230,113 @@ export default function PhotonXDemo() {
             ))}
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          {/* Desktop Right Side */}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '16px'
+          }} className="hidden-mobile">
             <WalletButton />
             <div style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '14px' }}>
               🕐 {currentTime ? currentTime.toLocaleTimeString() : '--:--:--'}
             </div>
           </div>
+
+          {/* Mobile Menu Button */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }} className="hidden-desktop">
+            <WalletButton />
+            <button
+              onClick={toggleMobileMenu}
+              style={{
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '8px',
+                cursor: 'pointer',
+                color: '#fff',
+                fontSize: '18px',
+                transition: 'all 0.3s ease'
+              }}
+              className="mobile-menu-toggle"
+            >
+              {isMobileMenuOpen ? '✕' : '☰'}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            background: 'rgba(0, 0, 0, 0.95)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            borderTop: 'none',
+            padding: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+            zIndex: 99
+          }}>
+            {['landing', 'trading', 'lp', 'demo', 'judge'].map((mode) => (
+              <button
+                key={mode}
+                onClick={() => handleModeSwitch(mode as any)}
+                style={{
+                  background: activeMode === mode 
+                    ? 'linear-gradient(135deg, #00d2d3, #54a0ff)' 
+                    : 'rgba(255, 255, 255, 0.1)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '12px 16px',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  textTransform: 'capitalize',
+                  transition: 'all 0.3s ease',
+                  textAlign: 'left'
+                }}
+              >
+                {mode === 'lp' ? 'LP Dashboard' : mode}
+              </button>
+            ))}
+            
+            {isJudgeMode && (
+              <div style={{
+                background: 'linear-gradient(135deg, #ffd700, #ffed4e)',
+                color: '#000',
+                padding: '8px 16px',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                textAlign: 'center',
+                marginTop: '8px'
+              }}>
+                🏆 JUDGE MODE
+              </div>
+            )}
+            
+            <div style={{ 
+              color: 'rgba(255, 255, 255, 0.7)', 
+              fontSize: '14px',
+              textAlign: 'center',
+              marginTop: '12px',
+              padding: '8px',
+              background: 'rgba(255, 255, 255, 0.05)',
+              borderRadius: '8px'
+            }}>
+              🕐 {currentTime ? currentTime.toLocaleTimeString() : '--:--:--'}
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Main Content */}
-      <main style={{ padding: '32px' }}>
+      <main style={{ padding: '32px' }} className="responsive-padding">
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           {/* Landing Page */}
           {activeMode === 'landing' && (
@@ -240,7 +348,7 @@ export default function PhotonXDemo() {
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 backdropFilter: 'blur(20px)',
                 marginBottom: '48px'
-              }}>
+              }} className="responsive-hero">
                 <h1 style={{
                   color: '#fff',
                   fontSize: '56px',
@@ -250,7 +358,7 @@ export default function PhotonXDemo() {
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   textShadow: '0 0 30px rgba(0, 210, 211, 0.3)'
-                }}>
+                }} className="responsive-text-lg">
                   Welcome to PhotonX
                 </h1>
                 <p style={{
@@ -260,7 +368,7 @@ export default function PhotonXDemo() {
                   maxWidth: '800px',
                   marginLeft: 'auto',
                   marginRight: 'auto'
-                }}>
+                }} className="responsive-text-md">
                   Revolutionary DeFi trading platform powered by ERC-7824 state channels.
                   Experience gasless trading with sub-200ms quotes and 90%+ gas savings.
                 </p>
@@ -270,7 +378,7 @@ export default function PhotonXDemo() {
                   gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
                   gap: '24px',
                   margin: '48px 0'
-                }}>
+                }} className="responsive-grid">
                   <div style={{
                     background: 'linear-gradient(135deg, rgba(0, 210, 211, 0.1), rgba(84, 160, 255, 0.1))',
                     borderRadius: '20px',
@@ -331,6 +439,7 @@ export default function PhotonXDemo() {
                     boxShadow: '0 10px 30px rgba(0, 210, 211, 0.3)',
                     transition: 'all 0.3s ease'
                   }}
+                  className="responsive-button"
                 >
                   🚀 Launch Demo
                 </button>
@@ -358,7 +467,7 @@ export default function PhotonXDemo() {
                   gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                   gap: '20px',
                   marginBottom: '32px'
-                }}>
+                }} className="responsive-grid">
                   <div style={{
                     background: 'linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 210, 211, 0.1))',
                     borderRadius: '16px',

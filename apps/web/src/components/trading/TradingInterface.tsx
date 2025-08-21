@@ -142,7 +142,7 @@ export function TradingInterface() {
           backdropFilter: 'blur(20px)',
           marginBottom: '24px'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }} className="trading-header">
             <h1 style={{ color: '#fff', fontSize: '28px', fontWeight: 'bold', margin: 0 }}>
               📈 PhotonX Trading
             </h1>
@@ -178,7 +178,7 @@ export function TradingInterface() {
             )}
           </div>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }} className="trading-grid">
             {/* RFQ Panel */}
             <div style={{
               background: 'linear-gradient(135deg, rgba(0, 210, 211, 0.15), rgba(84, 160, 255, 0.15))',
@@ -188,7 +188,7 @@ export function TradingInterface() {
               boxShadow: '0 20px 40px rgba(0, 210, 211, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
               position: 'relative',
               overflow: 'hidden'
-            }}>
+            }} className="trading-panel">
               <div style={{
                 position: 'absolute',
                 top: 0,
@@ -340,6 +340,7 @@ export function TradingInterface() {
                       transition: 'all 0.3s ease',
                       backdropFilter: 'blur(10px)'
                     }}
+                    className="trading-input"
                   />
                   <div style={{
                     position: 'absolute',
@@ -410,6 +411,7 @@ export function TradingInterface() {
                     : '0 15px 35px rgba(0, 210, 211, 0.4)',
                   animation: isRequesting || !isConnected || !amount ? 'none' : 'shimmer 3s ease-in-out infinite'
                 }}
+                className="trading-button"
               >
                 {isRequesting ? (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
@@ -438,7 +440,7 @@ export function TradingInterface() {
               boxShadow: '0 20px 40px rgba(0, 255, 136, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
               position: 'relative',
               overflow: 'hidden'
-            }}>
+            }} className="trading-panel">
               <div style={{
                 position: 'absolute',
                 top: 0,
@@ -588,7 +590,7 @@ export function TradingInterface() {
             💹 Live Market Prices
           </h3>
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }} className="market-grid">
             {Object.entries(realPrices).map(([symbol, price]) => (
               <div key={symbol} style={{
                 background: 'linear-gradient(135deg, rgba(0, 210, 211, 0.1), rgba(84, 160, 255, 0.1))',
@@ -623,7 +625,7 @@ export function TradingInterface() {
             📊 Trading Statistics
           </h3>
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }} className="stats-grid">
             <div style={{ textAlign: 'center' }}>
               <div style={{ color: '#00ff88', fontSize: '24px', fontWeight: 'bold' }}>156ms</div>
               <div style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '12px' }}>Avg Quote Time</div>
