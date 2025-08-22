@@ -10,8 +10,8 @@
 
 ## ⚡ Live Demo
 
-🌐 **Website**: [https://photonx-demo.vercel.app](https://photonx-demo.vercel.app)  
-🎮 **Judge Mode**: [https://photonx-demo.vercel.app?judge=true](https://photonx-demo.vercel.app?judge=true)
+🌐 **Website**: [https://photonx.vercel.app](https://photonx-demo.vercel.app)  
+🎮 **Judge Mode**: [https://photonx.vercel.app?judge=true](https://photonx-demo.vercel.app?judge=true)
 
 ## 🎯 What is PhotonX?
 
